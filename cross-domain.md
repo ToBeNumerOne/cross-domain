@@ -1,5 +1,3 @@
-<center>![Alt test](<a href="http://7xsbn8.com1.z0.glb.clouddn.com/14732430454.png" rel="nofollow">http://7xsbn8.com1.z0.glb.clouddn.com/14732430454.png</a>)
-
 # 浏览器的同源策略
 同源策略（Same origin policy）是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，则浏览器的正常功能可能都会受到影响。可以说Web是构建在同源策略基础之上的，浏览器只是针对同源策略的一种实现。
 
@@ -181,15 +179,15 @@ CORS的请求分为预检请求(preflight)和普通请求。
 
 下图是源代码请求过程中关于CORS的截图：
 
-![CORS请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsrequest.png)
+<center>![CORS请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsrequest.png)
 
 从该图可以看出CORS在每次请求的时候实际发出两次请求
 
-![CORS预请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsfirst.png)
+<center>![CORS预请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsfirst.png)
 
 第一次是预请求，请求方式是OPTIONS
 
-![CORS正式请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corssecond.png)
+<center>![CORS正式请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corssecond.png)
 
 第二次是真正的请求，请求方式是PUT
 
