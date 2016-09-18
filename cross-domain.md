@@ -179,15 +179,15 @@ CORS的请求分为预检请求(preflight)和普通请求。
 
 下图是源代码请求过程中关于CORS的截图：
 
-<center>![CORS请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsrequest.png)
+![CORS请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsrequest.png)
 
 从该图可以看出CORS在每次请求的时候实际发出两次请求
 
-<center>![CORS预请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsfirst.png)
+![CORS预请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corsfirst.png)
 
 第一次是预请求，请求方式是OPTIONS
 
-<center>![CORS正式请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corssecond.png)
+![CORS正式请求](https://github.com/ToBeNumerOne/cross-domain/blob/master/images/corssecond.png)
 
 第二次是真正的请求，请求方式是PUT
 
