@@ -1,4 +1,7 @@
 # 代码运行步骤
+**源代码见crossdomain文件夹**
+
+clone或者下载crossdomain，按照如下步骤运行代码
 ## 1、配置跨域环境
 打开本地hosts文件，添加如下配置项
 
