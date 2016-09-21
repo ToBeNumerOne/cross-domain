@@ -222,6 +222,43 @@ function cross(args){
       console.log(e);
     }
   };
+  
+  postMsg.send = function () {
+    try{
+      let iframeWindow = document.getElementById('dataFrame').contentWindow;
+      iframeWindow.postMessage(args.processData(), args.url);
+    } catch(e) {
+      console.log(e);
+    }
+  };
+
+  postMsg.sendFromIframe = function () {
+    try{
+      top.postMessage(args.processData(), args.sourceOrigin);
+    } catch(e) {
+      console.log(e);
+    }
+  };
+
+  // 此处args.url表示发送方的url
+  postMsg.receive = function () {
+    if (window.attachEvent) {
+      window.attachEvent('onmessage', function(event){
+        if(event.origin !== args.sourceOrigin) return;
+        if (args.callback) {
+          args.callback(event.data);
+        }
+      });
+    }
+    else {
+      window.addEventListener('message', function(event){
+        if(event.origin !== args.sourceOrigin) return;
+        if (args.callback) {
+          args.callback(event.data);
+        }
+      }, true);
+    }
+  };
 
   let docDomain = {};
   docDomain.req = function(){
@@ -295,8 +332,9 @@ function cross(args){
     jsonp: jsonp,
     winnameRequest: winname.req,
     winnameResponse: winname.res,
-    postMsgRequest: postMsg.req,
-    postMsgResponse: postMsg.res,
+    postMsgSend: postMsg.send,
+    postMsgSendFromIframe: postMsg.sendFromIframe,
+    postMsgReceive: postMsg.receive,
     docDomainRequest: docDomain.req,
     docDomainResponse: docDomain.res
   }
