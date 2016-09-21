@@ -111,103 +111,114 @@ function cross(args){
   let postMsg = {};
   postMsg.req = function () {
     try {
-      if (!window.postMessage){
-        throw 'browser does not support this way, please try another way!';
+      if (!window.postMessage) {
+        throw 'postMessage method is not support, please try another way!';
       }
-      if(!args.iframeSrc && !args.url){
-        throw 'one of iframe and url is required';
+      if (!args.iframeSrc && !args.url) {
+        throw 'url or iframe is required!';
       }
+
       if (!args.processData) {
-        throw 'the message are sent is required!';
+        throw 'function for generating data is required!';
       }
 
       var removeIFrame = (args.removeIFrame === true)? args.removeIFrame : false;
 
-      // 如果只有url,则通过url创建iframe
-      if (args.url){
-        var iframe = document.getElementById('dataFrame') || document.createElement('iframe');
-        //iframe.style.display = 'none';
-        iframe.id = 'dataFrame';
-        iframe.src = args.url;
-        document.body.appendChild(iframe);
-      } else {
-        // 否则直接使用页面中存在的iframe
+      var sendMsg = function() {
+
+        var frameWindow = iframe.contentWindow || iframe.contentDocument;
+        if (args.iframeSrc) {
+          frameWindow.postMessage(getData, iframe.src);
+        }
+        else {
+          frameWindow.postMessage(getData, args.url);
+        }
+      };
+
+      if (args.url) {
+        if (!document.getElementById('dataFrame')){
+          var iframe = document.createElement('iframe');
+          //iframe.style.display = 'none';
+          iframe.src = args.url;
+          iframe.id = 'dataFrame';
+          // iframe.onload = sendMsg;
+        } else {
+          var iframe = document.getElementById('dataFrame');
+          // iframe.onload = sendMsg;
+        }
+      } else if(args.iframeSrc){
         var iframe = args.iframeSrc;
+        // iframe.onload = sendMsg;
       }
 
       var getData = args.processData();
 
-      var sendMsg = function() {
+      document.body.appendChild(iframe);
 
-        var frameWindow = iframe.contentWindow || iframe.contentDocument;
-        if (args.frameSrc) {
-          frameWindow.postMessage(getData, iframe.src);
-        }
-        else {
-          frameWindow.postMessage(getData, args.targetOrigin);
-        }
 
-      };
+
       window.onload = sendMsg;
 
-      var receiveMsg = function(event){
-        if (event.origin !== args.targetOrigin) return;
-        // 接受到消息的回调函数
-        if (args.callback){
-          args.callback(event.data);
-        }
-        (! removeIFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-      };
-
       if (window.attachEvent) {
-        window.attachEvent('onmessage', receiveMsg);
+        window.attachEvent('onmessage', function(event){
+          if (args.callback) {
+            args.callback(event.data);
+          }
+        });
       }
       else {
-        window.addEventListener('message', receiveMsg, true);
+        window.addEventListener('message', function(event){
+          if (args.callback) {
+            args.callback(event.data);
+          }
+        }, true);
       }
 
-    } catch(e){
+
+    }
+    catch (e) {
       console.log(e);
     }
   };
 
   postMsg.res = function(){
     try {
-      if (! window.postMessage) {
-        throw 'your browser does not support postMessage';
+      if (!window.postMessage) {
+        throw 'postMessage is not support, please try another way!';
       }
-      if (! args.url) {
-        throw 'please input parent url';
+      if (!args.url) {
+        throw 'url from the request side is required!';
       }
-      if (! args.processData) {
-        throw 'please input processData function';
+      if (!args.processData) {
+        throw 'function for generate data is required!';
       }
+      // 获取将要传递给request的数据
       var getData = args.processData();
-
       var sendMsg = function() {
-        top.postMessage(getData, args.sourceOrigin);
+        parent.postMessage(getData, args.url);
       };
 
-      var receiveMsg = function(event){
-        if (event.origin !== args.url) return;
-        // 接受到消息的回调函数
-        if (args.callback){
-          args.callback(event.data);
-        }
-        sendMsg();
-        //event.source.postMessage(getData, event.origin);
-        (! removeIFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-      };
-
+      //window.onload = sendMsg;
 
       if (window.attachEvent) {
-        window.attachEvent('onmessage', receiveMsg);
+        window.attachEvent('onmessage', function(event){
+          if (args.callback) {
+            args.callback(event.data);
+            sendMsg();
+          }
+        });
       }
       else {
-        window.addEventListener('message', receiveMsg, true);
+        window.addEventListener('message', function(event){
+          if (args.callback) {
+            args.callback(event.data);
+            sendMsg();
+          }
+        }, true);
       }
 
-    } catch(e) {
+    }
+    catch (e) {
       console.log(e);
     }
   };
