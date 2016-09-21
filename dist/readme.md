@@ -1,5 +1,5 @@
 # Usage
-该跨域的库封装了jsonp、window.name、iframe+documen.domain、postMessage的跨域方式。调用方法如：
+该跨域的库封装了jsonp、window.name、iframe+documen.domain、postMessage的跨域方式。总的调用方法如：
 
 ```
 import your-name from '/your path/cross.js';
@@ -112,42 +112,54 @@ var args = {
 请求的发起方：
 ```
 var args = {
-  // url: 'http://leehey.org/crossjs/window_name/data.html',
-  iframeSrc: document.getElementById('dataFrame'),
-  removeIFrame: false,
-  // 接受到返回值得回调函数
-  // 用于和另一个源的url进行双向通信
-  callback: function (data) {
+  // 目标url
+  url: 'http://b.test.com:8081/test/postmsg/data.html',
+  //url: 'http://b.test.com:8081/pages/postmessage/pageB.html',
+  //removeIFrame: true,
+  // 发送消息域的源----此处是被请求的url的源
+  sourceOrigin: 'http://b.test.com:8081',
+  // 给目标url传递的数据
+  processData: function () {
+    return 'data send from a.test.com';
+  },
+  // 接收到数据时的处理函数
+  callback: function(data){
     console.log(data);
   }
 };
+// 绑定监听事件
+cross(args).postMsgReceive();
 
-cross(args).winnameRequest();
+// 发送消息事件可以由按钮事件触发
+cross(args).postMsgSend();
 ```
 
 被请求方：
 
 
 ```
+import cross from '../../cross-domain';
+
+var btn = document.getElementById('send');
+
 var args = {
-    url: 'http://a.test.com:8081/test/postmsg/index.html',
-    // 发起请求的域
-    sourceOrigin: 'http://a.test.com:8081',
-    // 目标域
-    targetOrigin:'http://b.test.com:8081',
-    // 发送的数据
-    data: {test: 'ok', a:1, b:2},
-    removeIFrame: false,
-    // return出返回给发起请求方的数据
-    processData: function () {
-      return 'data send from ------ other domain!';
-    },
-    // 接受到请求方请求之后的数据处理函数
-    callback: function(data){
-      alert(data);
-    }
-  };
-  cross(args).postMsgResponse();
+  // 将要发送到的目标url，此处值得是请求方的url
+  url:'http://a.test.com:8081/test/postmsg/index.html',
+  // 请求方的域，安全检查时候用
+  // 检查在接受到消息时是否来自指定域
+  sourceOrigin: 'http://a.test.com:8081',
+  // 数据生成函数
+  processData: function () {
+    return 'data send from ------ b.test.com';
+  },
+  // 接受到数据时的回调函数
+  callback: function(data){
+    alert(data);
+  }
+};
+cross(args).postMsgReceive();
+// 例如由按钮触发发送消息
+btn.addEventListener('click', cross(args).postMsgSendFromIframe(), false);
 ```
 
 
